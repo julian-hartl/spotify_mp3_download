@@ -78,7 +78,7 @@ def main():
         description='Downloads songs from a spotify playlist as mp3 files',
     )
     parser.add_argument('playlist_id')
-    parser.add_argument('-o', '--output')
+    parser.add_argument('-o', '--output', default="out")
     args = parser.parse_args()
     playlist_id = args.playlist_id
     output_path = args.output
