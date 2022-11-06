@@ -1,0 +1,7 @@
+.env
+.cache
+.temp
+venv
+.idea
+out
+DS_Store
