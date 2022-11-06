@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import argparse
 import os
+import random
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -8,14 +9,13 @@ from dataclasses import dataclass
 import yt_dlp
 from youtubesearchpython import VideosSearch
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 
 load_dotenv()
-
-auth_manager = SpotifyClientCredentials()
-access_token = auth_manager.get_access_token(as_dict=False)
-sp = spotipy.Spotify(auth=access_token)
+auth = SpotifyOAuth(redirect_uri="http://localhost:8888/callback", scope="playlist-read-private")
+accessToken = auth.get_access_token(as_dict=False)
+sp = spotipy.Spotify(auth=accessToken)
 
 temp_dir = ".temp"
 
