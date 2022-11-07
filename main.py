@@ -1,16 +1,14 @@
 #!/usr/bin/python
 import argparse
 import os
-import random
 import subprocess
-import sys
 from dataclasses import dataclass
 
-import yt_dlp
-from youtubesearchpython import VideosSearch
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+import yt_dlp
 from dotenv import load_dotenv
+from spotipy.oauth2 import SpotifyOAuth
+from youtubesearchpython import VideosSearch
 
 load_dotenv()
 auth = SpotifyOAuth(redirect_uri="http://localhost:8888/callback", scope="playlist-read-private")
