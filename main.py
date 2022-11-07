@@ -38,14 +38,26 @@ def search_video(query: str) -> VideoResult:
     return VideoResult(name=video.get("title"), url=url, id=video_id)
 
 
-def get_song_names(playlist_id: str) -> [str]:
-    result = sp.playlist(playlist_id=playlist_id)
+def get_song_names(id: str, type: str) -> [str]:
     names = []
-    for track_json in result['tracks']['items']:
-        track = track_json['track']
-        name = f"{track['artists'][0]['name']} - {track['name']}"
-        names.append(name)
+    if type == "playlist":
+        result = sp.playlist(playlist_id=id)
+        for track_json in result['tracks']['items']:
+            track = track_json['track']
+            name = build_song_name(track['artists'][0]['name'], track['name'])
+            names.append(name)
+    if type == "album":
+        result = sp.album(album_id=id)
+        for track in result['tracks']['items']:
+            name = build_song_name(track['artists'][0]['name'], track['name'])
+            names.append(name)
+
     return names
+
+
+def build_song_name(artist: str, song_name: str) -> str:
+    name = f"{artist} - {song_name}"
+    return name
 
 
 def download_mp3s(urls: [str]):
@@ -70,18 +82,23 @@ def filter_songs(ids: [str], output_path: str) -> [str]:
     return filter(lambda song: f"{song}.mp3" not in file_list, ids)
 
 
+def createDir(path: str):
+    os.system(f'mkdir -p "{path}"')
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog='Spotify MP3 Downloader',
         description='Downloads songs from a spotify playlist as mp3 files',
     )
-    parser.add_argument('playlist_id')
+    parser.add_argument('id')
     parser.add_argument('-o', '--output', default="out")
+    parser.add_argument('-t', '--type', default="playlist", choices=["album", "playlist"])
     args = parser.parse_args()
-    playlist_id = args.playlist_id
+    id = args.id
+    type = args.type
     output_path = args.output
-    print(f"Getting songs from playlist {playlist_id}...")
-    song_names = get_song_names(playlist_id=playlist_id)
+    song_names = get_song_names(id, type)
     print(f"Got {len(song_names)} songs from playlist")
     songs = list(filter_songs(song_names, output_path=output_path))
     amount_of_songs = len(songs)
@@ -90,8 +107,9 @@ def main():
     else:
         print(f"Getting {len(song_names) - amount_of_songs} songs from cache...")
     if amount_of_songs > 0:
-        os.system(f"mkdir {temp_dir}")
+        createDir(temp_dir)
         print(f"Downloading {amount_of_songs} songs")
+        createDir(output_path)
         for song in songs:
             result = search_video(song)
             print(f"Downloading {result.name}")
@@ -99,7 +117,7 @@ def main():
             os.system(f'mv "{temp_dir}/{result.id}.mp3" "{output_path}/{song}.mp3"')
         print(f"Downloaded {amount_of_songs} songs")
         print("Cleaning up temp files...")
-        os.system(f"rm -r {temp_dir}")
+        os.system(f'rm -r "{temp_dir}"')
     print("Done")
 
 
