@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import spotipy
 import yt_dlp
+from uuid import uuid4
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 from youtubesearchpython import VideosSearch
@@ -15,7 +16,7 @@ auth = SpotifyOAuth(redirect_uri="http://localhost:8888/callback", scope="playli
 accessToken = auth.get_access_token(as_dict=False)
 sp = spotipy.Spotify(auth=accessToken)
 
-temp_dir = ".temp"
+temp_dir = f".{uuid4()}"
 
 
 @dataclass
@@ -63,7 +64,7 @@ def build_song_name(artist: str, song_name: str) -> str:
 def download_mp3s(urls: [str]):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': f'.temp/%(id)s.%(ext)s',
+        'outtmpl': f'{temp_dir}/%(id)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
