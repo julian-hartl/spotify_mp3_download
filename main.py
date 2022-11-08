@@ -76,8 +76,8 @@ def download_mp3s(urls: [str]):
 
 
 def filter_songs(ids: [str], output_path: str) -> [str]:
-    os.system(f"mkdir -p {output_path}")
-    output = subprocess.check_output(f"ls {output_path}", shell=True).decode("utf-8")
+    os.system(f'mkdir -p "{output_path}"')
+    output = subprocess.check_output(f'ls "{output_path}"', shell=True).decode("utf-8")
     file_list = output.split("\n")
     return filter(lambda song: f"{song}.mp3" not in file_list, ids)
 
@@ -99,7 +99,7 @@ def main():
     type = args.type
     output_path = args.output
     song_names = get_song_names(id, type)
-    print(f"Got {len(song_names)} songs from playlist")
+    print(f"Got {len(song_names)} songs from {type}")
     songs = list(filter_songs(song_names, output_path=output_path))
     amount_of_songs = len(songs)
     if amount_of_songs == 0:
